@@ -1,5 +1,44 @@
 # CHANGELOG
 
+## 0.7.1 (9/26/15)
+
+* Fixes a couple of bugs around inline Clojure code. ([crisptrutski])
+
+## 0.7.0 (9/25/15)
+
+### New features
+
+* Alda now supports inline Clojure code! Anything between parentheses is interpreted as a Clojure expression and evaluated within the context of the `alda.lisp` namespace. 
+To preserve backwards compatibility, attributes still work the same way -- they just happen to be function calls now -- and there is a special reader behavior that will split an S-expression into multiple S-expressions if there is a comma or semicolon, so that there is even backwards compatibility with things like this: `(volume 50, tempo! 90)` (under the hood, this is read by the Clojure compiler as `(do (volume 50) (tempo! 90))`).
+
+### Breaking changes
+
+* Alda no longer has a native `(* long comment syntax *)`. This syntax will now be interpreted as a Clojure S-expression, which will fail because it will try to interpret everything inside as Clojure values and multiply them all together :) The "official" way to do long comments in an Alda score now is to via Clojure's `comment` macro, or you can always just use short comments.
+
+### Other changes
+
+* Bugfix: The Alda REPL `:play` command was only resetting the current/last offset of all the instruments for playback, causing inconsistent playback with respect to other things like volume and octave. Now it resets all of the instruments' attributes to their initial values, so it is truly like they are starting over from the beginning of the score.
+
+---
+
+## 0.6.4 (9/22/15)
+
+* Bugfix: parsing no longer fails when following a voice group with an instrument call.
+
+## 0.6.3 (9/19/15)
+
+* Fix another regression caused by 0.6.1 -- tying notes across barlines was no longer working because the barlines were evaluating to `nil` and throwing a wrench in duration calculation.
+
+* Add a `--tree` flag to the `alda parse` task, which prints the intermediate parse tree before being transformed to alda.lisp code.
+
+## 0.6.2 (9/18/15)
+
+* Fix regression caused by 0.6.1 -- the `barline` function in `alda.lisp.events.barline` wasn't actually being loaded into `alda.lisp`. Also, add debug log that this namespace was loaded into `alda.lisp`.
+
+## 0.6.1 (9/17/15)
+
+* Bar lines are now parsed as events (events that do nothing when evaluated) instead of comments; this is done in preparation for being able to generate visual scores.
+
 ## 0.6.0 (9/11/15)
 
 * Alda REPL `:play` command -- plays the current score from the beginning. ([crisptrutski]/[daveyarwood])
