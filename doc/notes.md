@@ -28,19 +28,34 @@ e.g.
 
 Note durations can also be added together using the tie syntax, `~`. (`4~4` = two quarter notes tied together, 2 beats total.)
 
-A special feature of Alda is that you can use non-standard numbers as note durations. For example, 6 is a note that lasts 1/6 of a measure in 4/4 time. In standard notation, there is no such thing as a "sixth note," but this note length would be expressed as one note in a quarter note triplet; in Alda, a "6th note" doesn't necessarily need to be part of a triplet, however, which raises interesting rhythmic possibilities. 
 
 Alda keeps track of both the current octave and the current default note duration as notes are processed sequentially in a score. Each time a note duration is specified, that duration becomes the new default note duration. Each note that follows, when no note duration is specified, will have the default note duration. At the beginning of each instrument part, the default octave is 4 and the default note duration is 4 (i.e. a quarter note, 1 beat). 
+
+#### Advanced Rhythms
+
+* A special feature of Alda is that you can use non-standard numbers as note durations. For example, 6 is a note that lasts 1/6 of a measure in 4/4 time. In standard notation, there is no such thing as a "sixth note," but this note length would be commonly expressed as one note in a quarter note triplet; in Alda, a "6th note" doesn't necessarily need to be part of a triplet, however, which raises interesting rhythmic possibilities. 
+
+* Alda also has an alternate way of specifying rhythms called [CRAM](cram.md).
 
 ### Letter pitch 
 
 A note in Alda is expressed as a letter from a-g, any number of accidentals (optional), and a note duration (also optional).
 
-Flats and sharps will decrease/increase the pitch by one half step, e.g. C + 1/2 step = C#. Flats and sharps are expressed in Alda as - and +, and you can have multiple sharps or multiple flats, or even combine them, if you'd like. e.g. `c++` = C double-sharp = D. 
+Flats and sharps will decrease/increase the pitch by one half step, e.g. C + 1/2 step = C#. Flats and sharps are expressed in Alda as `-` and `+`, and you can have multiple sharps or multiple flats, or even combine them, if you'd like. e.g. `c++` = C double-sharp = D. 
+
+As an alternative to placing flats and sharps on every note that needs them, you may prefer to set the [key signature](attributes.md#key-signature), which will add the necessary sharps/flats to any note that needs them in order to match the key. See below for an example of using a key signature.
+
+To overwrite the flat/sharp specified by a key signature, you can include an accidental, i.e. `-` or `+` to make the note flat or sharp. You can also override the key signature and force a note to be natural with `=`, i.e. `c=` is a C natural regardless of what key you are in.
 
 ## Example 
 
 The following is a 1-octave B major scale, ascending and descending, starting in octave 4:
 
     o4 b4 > c+8 d+ e f+ g+ a+ b4
-    a+ g+ f+ e d+ c+ < b2.
+    a+8 g+ f+ e d+ c+ < b2.
+
+Here is the same example, using a key signature in order to avoid having to include all of the sharps:
+
+    (key-signature "f+ c+ g+ d+ a+")
+    o4 b4 > c8 d e f g a b4
+    a8 g f e d c < b2.

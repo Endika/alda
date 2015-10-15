@@ -12,9 +12,10 @@ nickname                = <"\""> acceptable-name <"\"">
 
     (* notes, chords & other events *)
 
-<music-data>            = (voices | event)*
+<music-data>            = <ows> (voices | event)*
 <event>                 = chord | note | rest | octave-change |
-                          clj-expr | marker | at-marker | barline
+                          clj-expr | marker | at-marker | barline |
+                          code-block | cram
 voices                  = voice+ (<voice-zero> | <#"\z"> | &part)
 voice                   = voice-number event*
 voice-number            = <"V"> #"[1-9]\d*" <":"> <ows>
@@ -26,11 +27,17 @@ chord                   = (note | rest) subchord+
 note                    = pitch duration? <ows> slur?
 rest                    = <"r"> duration? <ows>
 
-pitch                   = !name #"[a-g][+-]*"
+pitch                   = !name #"[a-g]" accidental*
+<accidental>            = flat | sharp | natural
+flat                    = "-"
+sharp                   = "+"
+natural                 = "="
 duration                = note-length <ows> barline? <ows> subduration* slur?
 <subduration>           = tie <ows> barline? <ows> note-length <ows> barline? <ows>
-note-length             = number dots?
-number                  = #"-?[0-9]+"
+note-length             = positive-number dots?
+number                  = positive-number | negative-number
+positive-number         = #"[0-9]+"
+negative-number         = #"-[0-9]+"
 dots                    = #"\.+"
 <tie>                   = <"~">
 slur                    = <"~">
@@ -54,19 +61,19 @@ clj-character           = <"\\"> ( "newline" / "space" / "tab" /
 clj-string              = <"\""> inside-clj-string* <"\"">
 <inside-clj-string>     = !"\"" #".|\n|\r" | "\\\"" 
 
-<inside-clj-coll>       = !( "(" | ")" | 
-                             "[" | "]" | 
-                             "#{" | 
-                             "{" | "}" | 
-                             "\"" | "\\" )
-                          #".|\n|\r" | clj-list | clj-string | clj-character |
-                          clj-vector | clj-map | clj-set
+clj-expr                = <"("> inside-clj-expr* <")"> <ows>
+<inside-clj-expr>       = !( "(" | ")" | "\"" | "\\" )
+                          #".|\n|\r" | clj-string | clj-character | clj-expr
 
-clj-expr                = <"("> inside-clj-coll* <")"> <ows>
-clj-list                = <"("> inside-clj-coll* <")">
-clj-vector              = <"["> inside-clj-coll* <"]">
-clj-set                 = <"#{"> inside-clj-coll* <"}">
-clj-map                 = <"{"> inside-clj-coll* <"}">
+    (* alda code blocks *)
+
+code-block              = code-block-no-ws <ows>
+code-block-no-ws        = <"["> inside-code-block* <"]">
+<inside-code-block>     = !( "[" | "]") #".|\n|\r" | code-block-no-ws
+
+    (* cram - rhythmic section *)
+
+cram                    = <"{"> event* <"}"> duration? <ows>
 
     (* comments & whitespace *)
 

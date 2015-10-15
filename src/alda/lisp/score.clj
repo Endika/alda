@@ -18,9 +18,11 @@
 (defn score*
   []
   (letfn [(init [var val] (alter-var-root var (constantly val)))]
-    (init #'*score-text* "") 
+    (init #'*score-text* "")
     (init #'*events* {:start {:offset (AbsoluteOffset. 0), :events []}})
     (init #'*global-attributes* {})
+    (init #'*time-scaling* 1)
+    (init #'*beats-tally* nil)
     (init #'*instruments* {})
     (init #'*current-instruments* #{})
     (init #'*nicknames* {})))
@@ -31,16 +33,16 @@
    offsets."
   [events-map]
   (into #{}
-    (mapcat (fn [[_ {:keys [offset events]}]]
-              (for [event events]
-                (update-in event [:offset] absolute-offset)))
-            events-map)))
+        (mapcat (fn [[_ {:keys [offset events]}]]
+                  (for [event events]
+                    (update-in event [:offset] absolute-offset))))
+        events-map))
 
 (defn markers [events-map]
   (into {}
-    (map (fn [[marker-name {marker-offset :offset}]]
-           [marker-name (absolute-offset marker-offset)])
-         events-map)))
+        (map (fn [[marker-name {marker-offset :offset}]]
+               [marker-name (absolute-offset marker-offset)]))
+        events-map))
 
 (defn score-map
   []

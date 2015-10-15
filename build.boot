@@ -7,20 +7,21 @@
                   [adzerk/bootlaces      "0.1.12" :scope "test"]
                   [adzerk/boot-test      "1.0.4"  :scope "test"]
                   [com.taoensso/timbre   "4.1.1"]
+                  [clj-http              "2.0.0"]
                   [djy                   "0.1.4"]
                   [str-to-argv           "0.1.0"]
-                  [overtone              "0.9.1"]
+                  [overtone/at-at        "1.2.0"]
                   [midi.soundfont        "0.1.0"]
-                  [reply                 "0.3.7"]
-                  [backtick              "0.3.3"]])
+                  [jline                 "2.12.1"]])
 
 (require '[adzerk.bootlaces :refer :all]
          '[adzerk.boot-test :refer :all]
          '[alda.version]
          '[alda.cli]
-         '[str-to-argv :refer (split-args)])
+         '[alda.lisp        :refer :all]
+         '[str-to-argv      :refer (split-args)])
 
-; version number is stored in alda.version 
+; version number is stored in alda.version
 (bootlaces! alda.version/-version-)
 
 (task-options!
@@ -36,12 +37,14 @@
   test {:namespaces '#{
                        alda.parser.barlines-test
                        alda.parser.clj-exprs-test
+                       alda.parser.code-blocks-test
                        alda.parser.comments-test
                        alda.parser.duration-test
                        alda.parser.events-test
                        alda.parser.octaves-test
                        alda.parser.score-test
                        alda.lisp.attributes-test
+                       alda.lisp.cram-test
                        alda.lisp.chords-test
                        alda.lisp.duration-test
                        alda.lisp.global-attributes-test
@@ -51,12 +54,13 @@
                        alda.lisp.pitch-test
                        alda.lisp.score-test
                        alda.lisp.voices-test
+                       alda.util-test
                        }})
 
 (deftask alda
   "Run Alda CLI tasks.
-   
-   Whereas running `bin/alda <cmd> <args>` will use the latest deployed 
+
+   Whereas running `bin/alda <cmd> <args>` will use the latest deployed
    version of Alda, running this task (`boot alda -x '<cmd> <args>'`)
    will use the current (local) version of this repo."
   [x execute ARGS str "The Alda CLI task and args as a single string."]
